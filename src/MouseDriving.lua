@@ -14,9 +14,6 @@ function MouseDriving.prerequisitesPresent(specializations)
     return SpecializationUtil.hasSpecialization(Drivable, specializations)
 end
 
-function MouseDriving.registerEvents(vehicleType)
-end
-
 function MouseDriving.registerFunctions(vehicleType)
     SpecializationUtil.registerFunction(vehicleType, "toggleMouseDriving", MouseDriving.toggleMouseDriving)
 end
@@ -33,20 +30,53 @@ function MouseDriving:onPreLoad(savegame)
     self.spec_mouseDriving = self[string.format("spec_%s.mouseDriving", MouseDriving.MOD_NAME)]
     local spec = self.spec_mouseDriving
     spec.enabled = false
-    spec.lastMousePosX = 0.5
-    spec.lastMousePosY = 0.5
 
-    MouseDrivingMain:addMouseEventListener(self, MouseDriving.onMouseDrivingEvent)
+    spec.realSteerAxis = 0
+    spec.computedSteerAxis = 0
+
+    spec.realThrottleAxis = 0
+    spec.computedThrottleAxis = 0
+
+    spec.mouseSensitivity = 20
+    spec.mouseDeadZone = 0.05
 end
 
 function MouseDriving:onDelete()
-    MouseDrivingMain:removeMouseEventListener(self)
 end
 
 function MouseDriving:onUpdate(dt, isActiveForInput, isActiveForInputIgnoreSelection, isSelected)
     if self:getIsEntered() then
         local spec = self.spec_mouseDriving
-        renderText(0.5, 0.5, 0.02, string.format("%s %s", spec.lastMousePosX, spec.lastMousePosY))
+
+        local dbg = {}
+        dbg.computedSteerAxis = spec.computedSteerAxis
+        dbg.computedThrottleAxis = spec.computedThrottleAxis
+        Utility.renderTable(0.4, 0.3, 0.02, dbg)
+
+        if g_inputBinding.pressedMouseComboMask == 0 and spec.enabled and not g_inputBinding:getShowMouseCursor() then
+            if math.abs(g_inputBinding.mouseMovementX) > 0.0005 then
+                spec.realSteerAxis = Utility.clamp(-1 - spec.mouseDeadZone, spec.realSteerAxis + (g_inputBinding.mouseMovementX * spec.mouseSensitivity), 1 + spec.mouseDeadZone)
+            end
+            if math.abs(g_inputBinding.mouseMovementY) > 0.0005 then
+                spec.realThrottleAxis = Utility.clamp(-1 - spec.mouseDeadZone, spec.realThrottleAxis + (g_inputBinding.mouseMovementY * spec.mouseSensitivity), 1 + spec.mouseDeadZone)
+            end
+        end
+
+        if spec.realSteerAxis <= -spec.mouseDeadZone then
+            spec.computedSteerAxis = spec.realSteerAxis + spec.mouseDeadZone
+        elseif spec.realSteerAxis >= spec.mouseDeadZone then
+            spec.computedSteerAxis = spec.realSteerAxis - spec.mouseDeadZone
+        else
+            spec.computedSteerAxis = 0
+        end
+
+        if spec.realThrottleAxis <= -spec.mouseDeadZone then
+            spec.computedThrottleAxis = spec.realThrottleAxis + spec.mouseDeadZone
+        elseif spec.realThrottleAxis >= spec.mouseDeadZone then
+            spec.computedThrottleAxis = spec.realThrottleAxis - spec.mouseDeadZone
+        else
+            spec.computedThrottleAxis = 0
+        end
     end
 end
 
@@ -64,24 +94,13 @@ end
 function MouseDriving:toggleMouseDriving(enabled)
     local spec = self.spec_mouseDriving
     spec.enabled = enabled
+    spec.realSteerAxis = 0
+    spec.computedSteerAxis = 0
+    spec.realThrottleAxis = 0
+    spec.computedThrottleAxis = 0
 end
 
 function MouseDriving.onToggleMouseDriving(self, actionName, inputValue, callbackState, isAnalog, isMouse)
     local spec = self.spec_mouseDriving
     self:toggleMouseDriving(not spec.enabled)
-    DebugUtil.printTableRecursively(g_inputBinding, nil, nil, 0)
-end
-
-function MouseDriving.onMouseDrivingEvent(self, x, y)
-    if self:getIsEntered() then
-        local spec = self.spec_mouseDriving
-        if spec.enabled then
-            if x ~= 0.5 then
-                spec.lastMousePosX = x
-            end
-            if y ~= 0.5 then
-                spec.lastMousePosY = y
-            end
-        end
-    end
 end
