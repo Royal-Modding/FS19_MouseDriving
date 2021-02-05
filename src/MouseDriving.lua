@@ -77,6 +77,18 @@ function MouseDriving:onUpdate(dt, isActiveForInput, isActiveForInputIgnoreSelec
         else
             spec.computedThrottleAxis = 0
         end
+
+        if not g_inputBinding:getShowMouseCursor() then
+            if spec.computedThrottleAxis > 0 then
+                Drivable.actionEventAccelerate(self, nil, spec.computedThrottleAxis, nil, nil)
+            end
+
+            if spec.computedThrottleAxis < 0 then
+                Drivable.actionEventBrake(self, nil, math.abs(spec.computedThrottleAxis), nil, nil)
+            end
+
+            Drivable.actionEventSteer(self, nil, spec.computedSteerAxis, nil, true, nil, InputDevice.CATEGORY.GAMEPAD)
+        end
     end
 end
 
