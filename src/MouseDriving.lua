@@ -6,6 +6,8 @@
 
 MouseDriving = {}
 MouseDriving.MOD_NAME = g_currentModName
+MouseDriving.BASE_DEADZONE = 0.05
+MouseDriving.BASE_SENSITIVITY = 20
 
 function MouseDriving.initSpecialization()
 end
@@ -37,21 +39,35 @@ function MouseDriving:onPreLoad(savegame)
     spec.realThrottleAxis = 0
     spec.computedThrottleAxis = 0
 
-    spec.mouseSensitivity = 20
-    spec.mouseDeadZone = 0.05
+    spec.mouseSensitivityMultiplier = 1
+    spec.mouseDeadZoneMultiplier = 1
+
+    spec.mouseSensitivity = spec.mouseSensitivityMultiplier * MouseDriving.BASE_SENSITIVITY
+    spec.mouseDeadZone = spec.mouseDeadZoneMultiplier * MouseDriving.BASE_DEADZONE
+
+    MouseDrivingMain:addSettingsChangeListener(self, MouseDriving.onSettingsChanged)
 end
 
 function MouseDriving:onDelete()
+    MouseDrivingMain:removeSettingsChangeListener(self)
+end
+
+function MouseDriving.onSettingsChanged(self, deadZone, sensitivity)
+    local spec = self.spec_mouseDriving
+    if deadZone ~= nil then
+        spec.mouseDeadZoneMultiplier = deadZone
+        spec.mouseDeadZone = spec.mouseDeadZoneMultiplier * MouseDriving.BASE_DEADZONE
+    end
+
+    if sensitivity ~= nil then
+        spec.mouseSensitivityMultiplier = sensitivity
+        spec.mouseSensitivity = spec.mouseSensitivityMultiplier * MouseDriving.BASE_SENSITIVITY
+    end
 end
 
 function MouseDriving:onUpdate(dt, isActiveForInput, isActiveForInputIgnoreSelection, isSelected)
     if self:getIsEntered() then
         local spec = self.spec_mouseDriving
-
-        local dbg = {}
-        dbg.computedSteerAxis = spec.computedSteerAxis
-        dbg.computedThrottleAxis = spec.computedThrottleAxis
-        Utility.renderTable(0.4, 0.3, 0.02, dbg)
 
         if g_inputBinding.pressedMouseComboMask == 0 and spec.enabled and not g_inputBinding:getShowMouseCursor() then
             if math.abs(g_inputBinding.mouseMovementX) > 0.0005 then

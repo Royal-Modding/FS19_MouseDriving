@@ -32,6 +32,7 @@ Fr description
 	<extraSourceFiles>
 		<sourceFile filename="rmod/Main.lua" />
 		<sourceFile filename="utility/Main.lua" />
+		<sourceFile filename="rset/Main.lua" />
 		<sourceFile filename="mouseDrivingMain.lua" />
 	</extraSourceFiles>
 
@@ -48,6 +49,21 @@ Fr description
 	<l10n>
 		<text name="input_MD_TOGGLE">
 			<en>Toggle mouse driving</en>
+		</text>
+		<text name="md_mod_settings_title">
+			<en>Mouse Driving</en>
+		</text>
+		<text name="md_setting_deadZone">
+			<en>Deadzone</en>
+		</text>
+		<text name="md_setting_deadZone_tooltip">
+			<en>Adjust the mouse virtual axis "deadzone".</en>
+		</text>
+		<text name="md_setting_sensitivity">
+			<en>Sensitivity</en>
+		</text>
+		<text name="md_setting_sensitivity_tooltip">
+			<en>Adjust the mouse virtual axis "sensitivity".</en>
 		</text>
 	</l10n>
 </modDesc> <!--

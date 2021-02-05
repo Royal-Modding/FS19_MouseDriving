@@ -6,10 +6,11 @@
 
 InitRoyalMod(Utils.getFilename("rmod/", g_currentModDirectory))
 InitRoyalUtility(Utils.getFilename("utility/", g_currentModDirectory))
+InitRoyalSettings(Utils.getFilename("rset/", g_currentModDirectory))
 
 ---@class MouseDrivingMain : RoyalMod
 MouseDrivingMain = RoyalMod.new(r_debug_r, false)
-MouseDrivingMain.mouseEventListeners = {}
+MouseDrivingMain.settingsChangeListeners = {}
 
 function MouseDrivingMain:initialize()
 end
@@ -27,6 +28,44 @@ end
 function MouseDrivingMain:onLoad()
     Utility.overwrittenStaticFunction(VehicleCamera, "actionEventLookLeftRight", MouseDrivingMain.VehicleCamera_actionEventLookLeftRight)
     Utility.overwrittenStaticFunction(VehicleCamera, "actionEventLookUpDown", MouseDrivingMain.VehicleCamera_actionEventLookUpDown)
+
+    g_royalSettings:registerMod(self.name, self.directory .. "settings_icon.dds", "$l10n_md_mod_settings_title")
+
+    g_royalSettings:registerSetting(
+        self.name,
+        "deadZone",
+        g_royalSettings.TYPES.GLOBAL,
+        g_royalSettings.OWNERS.USER,
+        4,
+        {0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3},
+        {"25%", "50%", "75%", "100%", "125%", "150%", "175%", "200%", "250%", "300%"},
+        "$l10n_md_setting_deadZone",
+        "$l10n_md_setting_deadZone_tooltip"
+    ):addCallback(self.onDeadZoneChange, self)
+
+    g_royalSettings:registerSetting(
+        self.name,
+        "sensitivity",
+        g_royalSettings.TYPES.GLOBAL,
+        g_royalSettings.OWNERS.USER,
+        4,
+        {0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3},
+        {"25%", "50%", "75%", "100%", "125%", "150%", "175%", "200%", "250%", "300%"},
+        "$l10n_md_setting_sensitivity",
+        "$l10n_md_setting_sensitivity_tooltip"
+    ):addCallback(self.onSensitivityChange, self)
+end
+
+function MouseDrivingMain:onDeadZoneChange(value)
+    for object, event in pairs(MouseDrivingMain.settingsChangeListeners) do
+        event(object, value, nil)
+    end
+end
+
+function MouseDrivingMain:onSensitivityChange(value)
+    for object, event in pairs(MouseDrivingMain.settingsChangeListeners) do
+        event(object, nil, value)
+    end
 end
 
 function MouseDrivingMain:onPreLoadMap(mapFile)
@@ -81,9 +120,6 @@ function MouseDrivingMain:onReadUpdateStream(streamId, timestamp, connection)
 end
 
 function MouseDrivingMain:onMouseEvent(posX, posY, isDown, isUp, button)
-    for object, event in pairs(MouseDrivingMain.mouseEventListeners) do
-        event(object, posX, posY)
-    end
 end
 
 function MouseDrivingMain:onKeyEvent(unicode, sym, modifier, isDown)
@@ -122,11 +158,11 @@ end
 
 ---@param object table
 ---@param event function
-function MouseDrivingMain:addMouseEventListener(object, event)
-    MouseDrivingMain.mouseEventListeners[object] = event
+function MouseDrivingMain:addSettingsChangeListener(object, event)
+    MouseDrivingMain.settingsChangeListeners[object] = event
 end
 
 ---@param object table
-function MouseDrivingMain:removeMouseEventListener(object)
-    MouseDrivingMain.mouseEventListeners[object] = nil
+function MouseDrivingMain:removeSettingsChangeListener(object)
+    MouseDrivingMain.settingsChangeListeners[object] = nil
 end
