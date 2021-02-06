@@ -14,6 +14,10 @@ MouseDrivingMain = RoyalMod.new(r_debug_r, false)
 MouseDrivingMain.settingsChangeListeners = {}
 MouseDrivingMain.fillLevelsDisplay = nil
 MouseDrivingMain.showHud = true
+MouseDrivingMain.axes = {}
+MouseDrivingMain.axes.x = 0
+MouseDrivingMain.axes.y = 0
+MouseDrivingMain.axes.invertY = -1
 
 function MouseDrivingMain:initialize()
     Utility.overwrittenStaticFunction(VehicleCamera, "actionEventLookLeftRight", MouseDrivingMain.VehicleCamera_actionEventLookLeftRight)
@@ -62,6 +66,11 @@ function MouseDrivingMain:onLoad()
         self.onHudChange,
         self
     )
+
+    g_royalSettings:registerSetting(self.name, "invert_throttle", g_royalSettings.TYPES.GLOBAL, g_royalSettings.OWNERS.USER, 2, {1, -1}, {"$l10n_ui_on", "$l10n_ui_off"}, "$l10n_md_setting_hud", "$l10n_md_setting_hud_tooltip"):addCallback(
+        self.onInvertThrottleChange,
+        self
+    )
 end
 
 function MouseDrivingMain:onDeadZoneChange(value)
@@ -78,6 +87,10 @@ end
 
 function MouseDrivingMain:onHudChange(value)
     MouseDrivingMain.showHud = value
+end
+
+function MouseDrivingMain:onInvertThrottleChange(value)
+    MouseDrivingMain.axes.invertY = value
 end
 
 function MouseDrivingMain:onPreLoadMap(mapFile)
@@ -120,6 +133,7 @@ function MouseDrivingMain:onReadStream(streamId)
 end
 
 function MouseDrivingMain:onUpdate(dt)
+    --Utility.renderTable(0.2, 0.8, 0.02, self.axes)
 end
 
 function MouseDrivingMain:onUpdateTick(dt)
@@ -160,11 +174,17 @@ function MouseDrivingMain.VehicleCamera_actionEventLookUpDown(superFunc, camera,
     if not isMouse or camera == nil or camera.vehicle == nil or camera.vehicle.spec_mouseDriving == nil or not camera.vehicle.spec_mouseDriving.enabled then
         superFunc(camera, actionName, inputValue, callbackState, isAnalog, isMouse)
     end
+    if isMouse then
+        MouseDrivingMain.axes.y = inputValue * MouseDrivingMain.axes.invertY
+    end
 end
 
 function MouseDrivingMain.VehicleCamera_actionEventLookLeftRight(superFunc, camera, actionName, inputValue, callbackState, isAnalog, isMouse)
     if not isMouse or camera == nil or camera.vehicle == nil or camera.vehicle.spec_mouseDriving == nil or not camera.vehicle.spec_mouseDriving.enabled then
         superFunc(camera, actionName, inputValue, callbackState, isAnalog, isMouse)
+    end
+    if isMouse then
+        MouseDrivingMain.axes.x = inputValue
     end
 end
 

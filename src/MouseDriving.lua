@@ -6,8 +6,8 @@
 
 MouseDriving = {}
 MouseDriving.MOD_NAME = g_currentModName
-MouseDriving.BASE_DEADZONE = 0.1
-MouseDriving.BASE_SENSITIVITY = 30
+MouseDriving.BASE_DEADZONE = 0.065
+MouseDriving.BASE_SENSITIVITY = 0.02
 
 function MouseDriving.initSpecialization()
     MouseDriving.hud = AxisHud:new()
@@ -71,14 +71,17 @@ function MouseDriving:onUpdate(dt, _, _, _)
     if self:getIsEntered() then
         local spec = self.spec_mouseDriving
 
-        if g_inputBinding.pressedMouseComboMask == 0 and spec.enabled and not g_inputBinding:getShowMouseCursor() then
-            if math.abs(g_inputBinding.mouseMovementX) > 0.0005 then
-                spec.realSteerAxis = Utility.clamp(-1 - spec.mouseDeadZone, spec.realSteerAxis + (g_inputBinding.mouseMovementX * spec.mouseSensitivity), 1 + spec.mouseDeadZone)
-            end
-            if math.abs(g_inputBinding.mouseMovementY) > 0.0005 then
-                spec.realThrottleAxis = Utility.clamp(-1 - spec.mouseDeadZone, spec.realThrottleAxis + (g_inputBinding.mouseMovementY * spec.mouseSensitivity), 1 + spec.mouseDeadZone)
-            end
-        end
+        --if g_inputBinding.pressedMouseComboMask == 0 and spec.enabled and not g_inputBinding:getShowMouseCursor() then
+        --    if math.abs(g_inputBinding.mouseMovementX) > 0.0005 then
+        --        spec.realSteerAxis = Utility.clamp(-1 - spec.mouseDeadZone, spec.realSteerAxis + (g_inputBinding.mouseMovementX * spec.mouseSensitivity), 1 + spec.mouseDeadZone)
+        --    end
+        --    if math.abs(g_inputBinding.mouseMovementY) > 0.0005 then
+        --        spec.realThrottleAxis = Utility.clamp(-1 - spec.mouseDeadZone, spec.realThrottleAxis + (g_inputBinding.mouseMovementY * spec.mouseSensitivity), 1 + spec.mouseDeadZone)
+        --    end
+        --end
+
+        spec.realSteerAxis = Utility.clamp(-1 - spec.mouseDeadZone, spec.realSteerAxis + (MouseDrivingMain.axes.x * spec.mouseSensitivity), 1 + spec.mouseDeadZone)
+        spec.realThrottleAxis = Utility.clamp(-1 - spec.mouseDeadZone, spec.realThrottleAxis + (MouseDrivingMain.axes.y * spec.mouseSensitivity * 1.5), 1 + spec.mouseDeadZone)
 
         if spec.realSteerAxis <= -spec.mouseDeadZone then
             spec.computedSteerAxis = spec.realSteerAxis + spec.mouseDeadZone
