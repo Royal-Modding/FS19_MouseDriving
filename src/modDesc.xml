@@ -73,6 +73,12 @@ Fr description
 		<text name="md_setting_hud_tooltip">
 			<en>Whether to show or not the input axes HUD.</en>
 		</text>
+		<text name="md_setting_invert_throttle">
+			<en>Invert throttle</en>
+		</text>
+		<text name="md_setting_invert_throttle_tooltip">
+			<en>Whether to invert or not the throttle input axis.</en>
+		</text>
 	</l10n>
 </modDesc> <!--
 	<storeItems>

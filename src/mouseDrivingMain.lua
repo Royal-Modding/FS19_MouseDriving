@@ -67,7 +67,7 @@ function MouseDrivingMain:onLoad()
         self
     )
 
-    g_royalSettings:registerSetting(self.name, "invert_throttle", g_royalSettings.TYPES.GLOBAL, g_royalSettings.OWNERS.USER, 2, {1, -1}, {"$l10n_ui_on", "$l10n_ui_off"}, "$l10n_md_setting_hud", "$l10n_md_setting_hud_tooltip"):addCallback(
+    g_royalSettings:registerSetting(self.name, "invert_throttle", g_royalSettings.TYPES.GLOBAL, g_royalSettings.OWNERS.USER, 2, {1, -1}, {"$l10n_ui_on", "$l10n_ui_off"}, "$l10n_md_setting_invert_throttle", "$l10n_md_setting_invert_throttle_tooltip"):addCallback(
         self.onInvertThrottleChange,
         self
     )
