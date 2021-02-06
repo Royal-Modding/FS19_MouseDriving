@@ -7,12 +7,18 @@
 InitRoyalMod(Utils.getFilename("rmod/", g_currentModDirectory))
 InitRoyalUtility(Utils.getFilename("utility/", g_currentModDirectory))
 InitRoyalSettings(Utils.getFilename("rset/", g_currentModDirectory))
+InitRoyalHud(Utils.getFilename("hud/", g_currentModDirectory))
 
 ---@class MouseDrivingMain : RoyalMod
 MouseDrivingMain = RoyalMod.new(r_debug_r, false)
 MouseDrivingMain.settingsChangeListeners = {}
+MouseDrivingMain.fillLevelsDisplay = nil
+MouseDrivingMain.showHud = true
 
 function MouseDrivingMain:initialize()
+    Utility.overwrittenStaticFunction(VehicleCamera, "actionEventLookLeftRight", MouseDrivingMain.VehicleCamera_actionEventLookLeftRight)
+    Utility.overwrittenStaticFunction(VehicleCamera, "actionEventLookUpDown", MouseDrivingMain.VehicleCamera_actionEventLookUpDown)
+    Utility.overwrittenStaticFunction(FillLevelsDisplay, "new", MouseDrivingMain.FillLevelsDisplay_new)
 end
 
 function MouseDrivingMain:onValidateVehicleTypes(vehicleTypeManager, addSpecialization, addSpecializationBySpecialization, addSpecializationByVehicleType, addSpecializationByFunction)
@@ -26,9 +32,6 @@ function MouseDrivingMain:onSetMissionInfo(missionInfo, missionDynamicInfo)
 end
 
 function MouseDrivingMain:onLoad()
-    Utility.overwrittenStaticFunction(VehicleCamera, "actionEventLookLeftRight", MouseDrivingMain.VehicleCamera_actionEventLookLeftRight)
-    Utility.overwrittenStaticFunction(VehicleCamera, "actionEventLookUpDown", MouseDrivingMain.VehicleCamera_actionEventLookUpDown)
-
     g_royalSettings:registerMod(self.name, self.directory .. "settings_icon.dds", "$l10n_md_mod_settings_title")
 
     g_royalSettings:registerSetting(
@@ -54,6 +57,11 @@ function MouseDrivingMain:onLoad()
         "$l10n_md_setting_sensitivity",
         "$l10n_md_setting_sensitivity_tooltip"
     ):addCallback(self.onSensitivityChange, self)
+
+    g_royalSettings:registerSetting(self.name, "hud", g_royalSettings.TYPES.GLOBAL, g_royalSettings.OWNERS.USER, 1, {true, false}, {"$l10n_ui_on", "$l10n_ui_off"}, "$l10n_md_setting_hud", "$l10n_md_setting_hud_tooltip"):addCallback(
+        self.onHudChange,
+        self
+    )
 end
 
 function MouseDrivingMain:onDeadZoneChange(value)
@@ -66,6 +74,10 @@ function MouseDrivingMain:onSensitivityChange(value)
     for object, event in pairs(MouseDrivingMain.settingsChangeListeners) do
         event(object, nil, value)
     end
+end
+
+function MouseDrivingMain:onHudChange(value)
+    MouseDrivingMain.showHud = value
 end
 
 function MouseDrivingMain:onPreLoadMap(mapFile)
@@ -154,6 +166,12 @@ function MouseDrivingMain.VehicleCamera_actionEventLookLeftRight(superFunc, came
     if not isMouse or camera == nil or camera.vehicle == nil or camera.vehicle.spec_mouseDriving == nil or not camera.vehicle.spec_mouseDriving.enabled then
         superFunc(camera, actionName, inputValue, callbackState, isAnalog, isMouse)
     end
+end
+
+function MouseDrivingMain.FillLevelsDisplay_new(superFunc, hudAtlasPath)
+    local instance = superFunc(hudAtlasPath)
+    MouseDrivingMain.fillLevelsDisplay = instance
+    return instance
 end
 
 ---@param object table

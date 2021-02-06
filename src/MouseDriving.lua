@@ -6,10 +6,11 @@
 
 MouseDriving = {}
 MouseDriving.MOD_NAME = g_currentModName
-MouseDriving.BASE_DEADZONE = 0.05
-MouseDriving.BASE_SENSITIVITY = 20
+MouseDriving.BASE_DEADZONE = 0.1
+MouseDriving.BASE_SENSITIVITY = 30
 
 function MouseDriving.initSpecialization()
+    MouseDriving.hud = AxisHud:new()
 end
 
 function MouseDriving.prerequisitesPresent(specializations)
@@ -25,6 +26,7 @@ function MouseDriving.registerEventListeners(vehicleType)
     SpecializationUtil.registerEventListener(vehicleType, "onUpdate", MouseDriving)
     SpecializationUtil.registerEventListener(vehicleType, "onRegisterActionEvents", MouseDriving)
     SpecializationUtil.registerEventListener(vehicleType, "onDelete", MouseDriving)
+    SpecializationUtil.registerEventListener(vehicleType, "onDraw", MouseDriving)
 end
 
 function MouseDriving:onPreLoad(savegame)
@@ -65,7 +67,7 @@ function MouseDriving.onSettingsChanged(self, deadZone, sensitivity)
     end
 end
 
-function MouseDriving:onUpdate(dt, isActiveForInput, isActiveForInputIgnoreSelection, isSelected)
+function MouseDriving:onUpdate(dt, _, _, _)
     if self:getIsEntered() then
         local spec = self.spec_mouseDriving
 
@@ -105,6 +107,18 @@ function MouseDriving:onUpdate(dt, isActiveForInput, isActiveForInputIgnoreSelec
 
             Drivable.actionEventSteer(self, nil, spec.computedSteerAxis, nil, true, nil, InputDevice.CATEGORY.GAMEPAD)
         end
+
+        if MouseDrivingMain.showHud then
+            MouseDriving.hud:setAxisData(spec.computedSteerAxis, spec.computedThrottleAxis)
+            MouseDriving.hud:update(dt)
+        end
+    end
+end
+
+function MouseDriving:onDraw()
+    local spec = self.spec_mouseDriving
+    if self:getIsEntered() and spec.enabled and MouseDrivingMain.showHud then
+        MouseDriving.hud:render()
     end
 end
 
