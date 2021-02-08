@@ -4,13 +4,18 @@
 ---@version r_version_r
 ---@date 04/02/2021
 
+---@class MouseDriving
+---@field getIsEntered fun():boolean
+---@field clearActionEventsTable fun(actionEvents:table)
+---@field getIsActiveForInput fun():boolean
+---@field addActionEvent function
 MouseDriving = {}
 MouseDriving.MOD_NAME = g_currentModName
-MouseDriving.THROTTLE_BASE_DEADZONE = 0.06
+MouseDriving.THROTTLE_BASE_DEADZONE = 0.05
 MouseDriving.THROTTLE_BASE_SENSITIVITY = 0.02
 MouseDriving.THROTTLE_DEADZONE = 0
 MouseDriving.THROTTLE_SENSITIVITY = 0
-MouseDriving.STEER_BASE_DEADZONE = 0.05
+MouseDriving.STEER_BASE_DEADZONE = 0.035
 MouseDriving.STEER_BASE_SENSITIVITY = 0.013
 MouseDriving.STEER_DEADZONE = 0
 MouseDriving.STEER_SENSITIVITY = 0
@@ -26,6 +31,7 @@ end
 
 function MouseDriving.registerFunctions(vehicleType)
     SpecializationUtil.registerFunction(vehicleType, "toggleMouseDriving", MouseDriving.toggleMouseDriving)
+    SpecializationUtil.registerFunction(vehicleType, "resetMouseDriving", MouseDriving.resetMouseDriving)
 end
 
 function MouseDriving.registerEventListeners(vehicleType)
@@ -36,20 +42,24 @@ function MouseDriving.registerEventListeners(vehicleType)
     SpecializationUtil.registerEventListener(vehicleType, "onDraw", MouseDriving)
 end
 
-function MouseDriving:onPreLoad(savegame)
+function MouseDriving:onPreLoad(_)
     ---@type table
     self.spec_mouseDriving = self[string.format("spec_%s.mouseDriving", MouseDriving.MOD_NAME)]
     local spec = self.spec_mouseDriving
     spec.enabled = false
+    spec.paused = false
 
     spec.realSteerAxis = 0
     spec.computedSteerAxis = 0
 
     spec.realThrottleAxis = 0
     spec.computedThrottleAxis = 0
+
+    MouseDrivingMain:addSettingsChangedEventListener(self, MouseDriving.onSettingsChangedEvent)
 end
 
 function MouseDriving:onDelete()
+    MouseDrivingMain:removeSettingsChangedEventListener(self)
 end
 
 function MouseDriving:onUpdate(dt, _, _, _)
@@ -105,12 +115,14 @@ function MouseDriving:onDraw()
     end
 end
 
-function MouseDriving:onRegisterActionEvents(isActiveForInput, isActiveForInputIgnoreSelection)
+function MouseDriving:onRegisterActionEvents(_, _)
     local spec = self.spec_mouseDriving
     if self:getIsEntered() then
         self:clearActionEventsTable(spec.actionEvents)
         if self:getIsActiveForInput(true, true) then
             local _, actionEventId = self:addActionEvent(spec.actionEvents, InputAction.MD_TOGGLE, self, MouseDriving.onToggleMouseDriving, false, true, false, true, nil, nil, true)
+            g_inputBinding:setActionEventTextVisibility(actionEventId, false)
+            _, actionEventId = self:addActionEvent(spec.actionEvents, InputAction.MD_PAUSE, self, MouseDriving.onPauseMouseDriving, true, true, false, true)
             g_inputBinding:setActionEventTextVisibility(actionEventId, false)
         end
     end
@@ -119,6 +131,11 @@ end
 function MouseDriving:toggleMouseDriving(enabled)
     local spec = self.spec_mouseDriving
     spec.enabled = enabled
+    self:resetMouseDriving()
+end
+
+function MouseDriving:resetMouseDriving()
+    local spec = self.spec_mouseDriving
     spec.realSteerAxis = 0
     spec.computedSteerAxis = 0
     spec.realThrottleAxis = 0
@@ -128,4 +145,15 @@ end
 function MouseDriving.onToggleMouseDriving(self, actionName, inputValue, callbackState, isAnalog, isMouse)
     local spec = self.spec_mouseDriving
     self:toggleMouseDriving(not spec.enabled)
+end
+
+function MouseDriving.onPauseMouseDriving(self, actionName, inputValue, callbackState, isAnalog, isMouse)
+    local spec = self.spec_mouseDriving
+    if spec.enabled then
+        spec.paused = inputValue == 1
+    end
+end
+
+function MouseDriving.onSettingsChangedEvent(self)
+    self:resetMouseDriving()
 end
