@@ -11,13 +11,13 @@ InitRoyalHud(Utils.getFilename("hud/", g_currentModDirectory))
 
 ---@class MouseDrivingMain : RoyalMod
 MouseDrivingMain = RoyalMod.new(r_debug_r, false)
-MouseDrivingMain.settingsChangeListeners = {}
 MouseDrivingMain.fillLevelsDisplay = nil
-MouseDrivingMain.showHud = true
 MouseDrivingMain.axes = {}
 MouseDrivingMain.axes.x = 0
+MouseDrivingMain.axes.xEnabled = true
 MouseDrivingMain.axes.y = 0
 MouseDrivingMain.axes.invertY = -1
+MouseDrivingMain.axes.yEnabled = true
 
 function MouseDrivingMain:initialize()
     Utility.overwrittenStaticFunction(VehicleCamera, "actionEventLookLeftRight", MouseDrivingMain.VehicleCamera_actionEventLookLeftRight)
@@ -40,57 +40,110 @@ function MouseDrivingMain:onLoad()
 
     g_royalSettings:registerSetting(
         self.name,
-        "deadZone",
+        "throttle_enabled",
         g_royalSettings.TYPES.GLOBAL,
         g_royalSettings.OWNERS.USER,
-        4,
-        {0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3},
-        {"25%", "50%", "75%", "100%", "125%", "150%", "175%", "200%", "250%", "300%"},
-        "$l10n_md_setting_deadZone",
-        "$l10n_md_setting_deadZone_tooltip"
-    ):addCallback(self.onDeadZoneChange, self)
+        1,
+        {true, false},
+        {"$l10n_ui_on", "$l10n_ui_off"},
+        "$l10n_md_setting_throttle_enabled",
+        "$l10n_md_setting_throttle_enabled_tooltip"
+    ):addCallback(self.onThrottleEnabledChange, self)
 
     g_royalSettings:registerSetting(
         self.name,
-        "sensitivity",
+        "throttle_deadZone",
         g_royalSettings.TYPES.GLOBAL,
         g_royalSettings.OWNERS.USER,
-        4,
+        6,
         {0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3},
         {"25%", "50%", "75%", "100%", "125%", "150%", "175%", "200%", "250%", "300%"},
-        "$l10n_md_setting_sensitivity",
-        "$l10n_md_setting_sensitivity_tooltip"
-    ):addCallback(self.onSensitivityChange, self)
+        "$l10n_md_setting_throttle_deadZone",
+        "$l10n_md_setting_throttle_deadZone_tooltip"
+    ):addCallback(self.onThrottleDeadZoneChange, self)
+
+    g_royalSettings:registerSetting(
+        self.name,
+        "throttle_sensitivity",
+        g_royalSettings.TYPES.GLOBAL,
+        g_royalSettings.OWNERS.USER,
+        6,
+        {0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3},
+        {"25%", "50%", "75%", "100%", "125%", "150%", "175%", "200%", "250%", "300%"},
+        "$l10n_md_setting_throttle_sensitivity",
+        "$l10n_md_setting_throttle_sensitivity_tooltip"
+    ):addCallback(self.onThrottleSensitivityChange, self)
+
+    g_royalSettings:registerSetting(self.name, "throttle_invert", g_royalSettings.TYPES.GLOBAL, g_royalSettings.OWNERS.USER, 2, {1, -1}, {"$l10n_ui_on", "$l10n_ui_off"}, "$l10n_md_setting_throttle_invert", "$l10n_md_setting_throttle_invert_tooltip"):addCallback(
+        self.onThrottleInvertChange,
+        self
+    )
+
+    g_royalSettings:registerSetting(self.name, "steer_enabled", g_royalSettings.TYPES.GLOBAL, g_royalSettings.OWNERS.USER, 1, {true, false}, {"$l10n_ui_on", "$l10n_ui_off"}, "$l10n_md_setting_steer_enabled", "$l10n_md_setting_steer_enabled_tooltip"):addCallback(
+        self.onSteerEnabledChange,
+        self
+    )
+
+    g_royalSettings:registerSetting(
+        self.name,
+        "steer_deadZone",
+        g_royalSettings.TYPES.GLOBAL,
+        g_royalSettings.OWNERS.USER,
+        6,
+        {0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3},
+        {"25%", "50%", "75%", "100%", "125%", "150%", "175%", "200%", "250%", "300%"},
+        "$l10n_md_setting_steer_deadZone",
+        "$l10n_md_setting_steer_deadZone_tooltip"
+    ):addCallback(self.onSteerDeadZoneChange, self)
+
+    g_royalSettings:registerSetting(
+        self.name,
+        "steer_sensitivity",
+        g_royalSettings.TYPES.GLOBAL,
+        g_royalSettings.OWNERS.USER,
+        6,
+        {0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3},
+        {"25%", "50%", "75%", "100%", "125%", "150%", "175%", "200%", "250%", "300%"},
+        "$l10n_md_setting_steer_sensitivity",
+        "$l10n_md_setting_steer_sensitivity_tooltip"
+    ):addCallback(self.onSteerSensitivityChange, self)
 
     g_royalSettings:registerSetting(self.name, "hud", g_royalSettings.TYPES.GLOBAL, g_royalSettings.OWNERS.USER, 1, {true, false}, {"$l10n_ui_on", "$l10n_ui_off"}, "$l10n_md_setting_hud", "$l10n_md_setting_hud_tooltip"):addCallback(
         self.onHudChange,
         self
     )
-
-    g_royalSettings:registerSetting(self.name, "invert_throttle", g_royalSettings.TYPES.GLOBAL, g_royalSettings.OWNERS.USER, 2, {1, -1}, {"$l10n_ui_on", "$l10n_ui_off"}, "$l10n_md_setting_invert_throttle", "$l10n_md_setting_invert_throttle_tooltip"):addCallback(
-        self.onInvertThrottleChange,
-        self
-    )
 end
 
-function MouseDrivingMain:onDeadZoneChange(value)
-    for object, event in pairs(MouseDrivingMain.settingsChangeListeners) do
-        event(object, value, nil)
-    end
+function MouseDrivingMain:onThrottleEnabledChange(value)
+    self.axes.yEnabled = value
 end
 
-function MouseDrivingMain:onSensitivityChange(value)
-    for object, event in pairs(MouseDrivingMain.settingsChangeListeners) do
-        event(object, nil, value)
-    end
+function MouseDrivingMain:onThrottleDeadZoneChange(value)
+    MouseDriving.THROTTLE_DEADZONE = MouseDriving.THROTTLE_BASE_DEADZONE * value
+end
+
+function MouseDrivingMain:onThrottleSensitivityChange(value)
+    MouseDriving.THROTTLE_SENSITIVITY = MouseDriving.THROTTLE_BASE_SENSITIVITY * value
+end
+
+function MouseDrivingMain:onThrottleInvertChange(value)
+    self.axes.invertY = value
+end
+
+function MouseDrivingMain:onSteerEnabledChange(value)
+    self.axes.xEnabled = value
+end
+
+function MouseDrivingMain:onSteerDeadZoneChange(value)
+    MouseDriving.STEER_DEADZONE = MouseDriving.STEER_BASE_DEADZONE * value
+end
+
+function MouseDrivingMain:onSteerSensitivityChange(value)
+    MouseDriving.STEER_SENSITIVITY = MouseDriving.STEER_BASE_SENSITIVITY * value
 end
 
 function MouseDrivingMain:onHudChange(value)
-    MouseDrivingMain.showHud = value
-end
-
-function MouseDrivingMain:onInvertThrottleChange(value)
-    MouseDrivingMain.axes.invertY = value
+    MouseDriving.SHOW_HUD = value
 end
 
 function MouseDrivingMain:onPreLoadMap(mapFile)
@@ -174,7 +227,7 @@ function MouseDrivingMain.VehicleCamera_actionEventLookUpDown(superFunc, camera,
     if not isMouse or camera == nil or camera.vehicle == nil or camera.vehicle.spec_mouseDriving == nil or not camera.vehicle.spec_mouseDriving.enabled then
         superFunc(camera, actionName, inputValue, callbackState, isAnalog, isMouse)
     end
-    if isMouse then
+    if isMouse and MouseDrivingMain.axes.yEnabled then
         MouseDrivingMain.axes.y = inputValue * MouseDrivingMain.axes.invertY
     end
 end
@@ -183,7 +236,7 @@ function MouseDrivingMain.VehicleCamera_actionEventLookLeftRight(superFunc, came
     if not isMouse or camera == nil or camera.vehicle == nil or camera.vehicle.spec_mouseDriving == nil or not camera.vehicle.spec_mouseDriving.enabled then
         superFunc(camera, actionName, inputValue, callbackState, isAnalog, isMouse)
     end
-    if isMouse then
+    if isMouse and MouseDrivingMain.axes.xEnabled then
         MouseDrivingMain.axes.x = inputValue
     end
 end
@@ -192,15 +245,4 @@ function MouseDrivingMain.FillLevelsDisplay_new(superFunc, hudAtlasPath)
     local instance = superFunc(hudAtlasPath)
     MouseDrivingMain.fillLevelsDisplay = instance
     return instance
-end
-
----@param object table
----@param event function
-function MouseDrivingMain:addSettingsChangeListener(object, event)
-    MouseDrivingMain.settingsChangeListeners[object] = event
-end
-
----@param object table
-function MouseDrivingMain:removeSettingsChangeListener(object)
-    MouseDrivingMain.settingsChangeListeners[object] = nil
 end

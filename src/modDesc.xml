@@ -55,29 +55,54 @@ Fr description
 		<text name="md_mod_settings_title">
 			<en>Mouse Driving</en>
 		</text>
-		<text name="md_setting_deadZone">
-			<en>Deadzone</en>
+
+		<text name="md_setting_throttle_enabled">
+			<en>Throttle enabled</en>
 		</text>
-		<text name="md_setting_deadZone_tooltip">
-			<en>Adjust the mouse virtual axis "deadzone".</en>
+		<text name="md_setting_throttle_enabled_tooltip">
+			<en>Whether to enable or not the throttle input.</en>
 		</text>
-		<text name="md_setting_sensitivity">
-			<en>Sensitivity</en>
+		<text name="md_setting_throttle_deadZone">
+			<en>Throttle deadzone</en>
 		</text>
-		<text name="md_setting_sensitivity_tooltip">
-			<en>Adjust the mouse virtual axis "sensitivity".</en>
+		<text name="md_setting_throttle_deadZone_tooltip">
+			<en>Adjust the throttle axis deadzone.</en>
+		</text>
+		<text name="md_setting_throttle_sensitivity">
+			<en>Throttle sensitivity</en>
+		</text>
+		<text name="md_setting_throttle_sensitivity_tooltip">
+			<en>Adjust the throttle axis sensitivity.</en>
+		</text>
+		<text name="md_setting_throttle_invert">
+			<en>Invert throttle</en>
+		</text>
+		<text name="md_setting_throttle_invert_tooltip">
+			<en>Whether to invert or not the throttle input axis.</en>
+		</text>
+		<text name="md_setting_steer_enabled">
+			<en>Steer enabled</en>
+		</text>
+		<text name="md_setting_steer_enabled_tooltip">
+			<en>Whether to enable or not the steer input.</en>
+		</text>
+		<text name="md_setting_steer_deadZone">
+			<en>Steer deadzone</en>
+		</text>
+		<text name="md_setting_steer_deadZone_tooltip">
+			<en>Adjust the steer axis deadzone.</en>
+		</text>
+		<text name="md_setting_steer_sensitivity">
+			<en>Steer sensitivity</en>
+		</text>
+		<text name="md_setting_steer_sensitivity_tooltip">
+			<en>Adjust the steer axis sensitivity.</en>
 		</text>
 		<text name="md_setting_hud">
 			<en>Axes HUD</en>
 		</text>
 		<text name="md_setting_hud_tooltip">
 			<en>Whether to show or not the input axes HUD.</en>
-		</text>
-		<text name="md_setting_invert_throttle">
-			<en>Invert throttle</en>
-		</text>
-		<text name="md_setting_invert_throttle_tooltip">
-			<en>Whether to invert or not the throttle input axis.</en>
 		</text>
 	</l10n>
 </modDesc> <!--
