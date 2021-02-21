@@ -90,11 +90,13 @@ function MouseDriving:onUpdate(dt, _, _, _)
 
             -- call input events
             if spec.computedThrottleAxis > 0 then
+                Drivable.actionEventBrake(self, nil, 0, nil, nil)
                 Drivable.actionEventAccelerate(self, nil, spec.computedThrottleAxis, nil, nil)
             end
 
-            if spec.computedThrottleAxis < 0 then
+            if spec.computedThrottleAxis <= 0 then
                 Drivable.actionEventBrake(self, nil, math.abs(spec.computedThrottleAxis), nil, nil)
+                Drivable.actionEventAccelerate(self, nil, 0, nil, nil)
             end
 
             Drivable.actionEventSteer(self, nil, spec.computedSteerAxis, nil, true, nil, InputDevice.CATEGORY.GAMEPAD)
