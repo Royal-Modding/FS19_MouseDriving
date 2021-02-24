@@ -53,6 +53,8 @@ Si vous souhaitez personnaliser davantage votre expérience de conduite, appuyez
 	<actions>
 		<action name="MD_TOGGLE" axisType="HALF" />
 		<action name="MD_PAUSE" axisType="HALF" />
+		<!--<action name="MD_AXIS_UPDOWN" category="VEHICLE" axisType="FULL" ignoreComboMask="true" />
+		<action name="MD_AXIS_LEFTRIGHT" category="VEHICLE" axisType="FULL" ignoreComboMask="true" />-->
 	</actions>
 
 	<inputBinding>
@@ -62,6 +64,14 @@ Si vous souhaitez personnaliser davantage votre expérience de conduite, appuyez
 		<actionBinding action="MD_PAUSE">
 			<binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl" />
 		</actionBinding>
+		<!--<actionBinding action="MD_AXIS_UPDOWN">
+			<binding device="KB_MOUSE_DEFAULT" input="AXIS_Y+" axisComponent="+" neutralInput="0" index="3" />
+			<binding device="KB_MOUSE_DEFAULT" input="AXIS_Y-" axisComponent="-" neutralInput="0" index="3" />
+		</actionBinding>
+		<actionBinding action="MD_AXIS_LEFTRIGHT">
+			<binding device="KB_MOUSE_DEFAULT" input="AXIS_X+" axisComponent="+" neutralInput="0" index="3" />
+			<binding device="KB_MOUSE_DEFAULT" input="AXIS_X-" axisComponent="-" neutralInput="0" index="3" />
+		</actionBinding>-->
 	</inputBinding>
 
 	<l10n>
@@ -73,6 +83,22 @@ Si vous souhaitez personnaliser davantage votre expérience de conduite, appuyez
 			<en>Pause mouse driving (keep pressed)</en>
 			<de>Mausfahren anhalten (gedrückt halten)</de>
 		</text>
+		<!--<text name="input_MD_AXIS_UPDOWN_1">
+			<en>Mouse driving, please don't change or touch</en>
+			<de>Fahren mit der Maus, bitte nicht ändern oder berühren</de>
+		</text>
+		<text name="input_MD_AXIS_UPDOWN_2">
+			<en>Mouse driving, please don't change or touch</en>
+			<de>Fahren mit der Maus, bitte nicht ändern oder berühren</de>
+		</text>
+		<text name="input_MD_AXIS_LEFTRIGHT_1">
+			<en>Mouse driving, please don't change or touch</en>
+			<de>Fahren mit der Maus, bitte nicht ändern oder berühren</de>
+		</text>
+		<text name="input_MD_AXIS_LEFTRIGHT_2">
+			<en>Mouse driving, please don't change or touch</en>
+			<de>Fahren mit der Maus, bitte nicht ändern oder berühren</de>
+		</text>-->
 		<text name="md_mod_settings_title">
 			<en>Mouse Driving</en>
 		</text>

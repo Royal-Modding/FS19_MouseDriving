@@ -13,12 +13,8 @@ InitRoyalHud(Utils.getFilename("hud/", g_currentModDirectory))
 MouseDrivingMain = RoyalMod.new(r_debug_r, false)
 MouseDrivingMain.settingsChangedEventListeners = {}
 MouseDrivingMain.fillLevelsDisplay = nil
-MouseDrivingMain.axes = {}
-MouseDrivingMain.axes.x = 0
-MouseDrivingMain.axes.xEnabled = true
-MouseDrivingMain.axes.y = 0
-MouseDrivingMain.axes.invertY = -1
-MouseDrivingMain.axes.yEnabled = true
+MouseDrivingMain.mouseYAxis = 0
+MouseDrivingMain.mouseXAxis = 0
 
 function MouseDrivingMain:initialize()
     Utility.overwrittenStaticFunction(VehicleCamera, "actionEventLookLeftRight", MouseDrivingMain.VehicleCamera_actionEventLookLeftRight)
@@ -110,13 +106,12 @@ function MouseDrivingMain:onLoad()
 end
 
 function MouseDrivingMain:onThrottleEnabledChange(value)
-    self.axes.yEnabled = value
+    MouseDriving.THROTTLE_ENABLED = value
     self:onSettingsChangedEvent()
 end
 
 function MouseDrivingMain:onThrottleDeadZoneChange(value)
     MouseDriving.THROTTLE_DEADZONE = MouseDriving.THROTTLE_BASE_DEADZONE * value
-    self:onSettingsChangedEvent()
 end
 
 function MouseDrivingMain:onThrottleSensitivityChange(value)
@@ -124,17 +119,17 @@ function MouseDrivingMain:onThrottleSensitivityChange(value)
 end
 
 function MouseDrivingMain:onThrottleInvertChange(value)
-    self.axes.invertY = value
+    MouseDriving.THROTTLE_INVERTED = value
+    self:onSettingsChangedEvent()
 end
 
 function MouseDrivingMain:onSteerEnabledChange(value)
-    self.axes.xEnabled = value
+    MouseDriving.STEER_ENABLED = value
     self:onSettingsChangedEvent()
 end
 
 function MouseDrivingMain:onSteerDeadZoneChange(value)
     MouseDriving.STEER_DEADZONE = MouseDriving.STEER_BASE_DEADZONE * value
-    self:onSettingsChangedEvent()
 end
 
 function MouseDrivingMain:onSteerSensitivityChange(value)
@@ -154,16 +149,16 @@ end
 function MouseDrivingMain.VehicleCamera_actionEventLookUpDown(superFunc, camera, actionName, inputValue, callbackState, isAnalog, isMouse)
     if not isMouse or camera == nil or camera.vehicle == nil or camera.vehicle.spec_mouseDriving == nil or not camera.vehicle.spec_mouseDriving.enabled or camera.vehicle.spec_mouseDriving.paused then
         superFunc(camera, actionName, inputValue, callbackState, isAnalog, isMouse)
-    elseif isMouse and MouseDrivingMain.axes.yEnabled then
-        MouseDrivingMain.axes.y = inputValue * MouseDrivingMain.axes.invertY
+    elseif isMouse and MouseDriving.THROTTLE_ENABLED then
+        MouseDrivingMain.mouseYAxis = inputValue
     end
 end
 
 function MouseDrivingMain.VehicleCamera_actionEventLookLeftRight(superFunc, camera, actionName, inputValue, callbackState, isAnalog, isMouse)
     if not isMouse or camera == nil or camera.vehicle == nil or camera.vehicle.spec_mouseDriving == nil or not camera.vehicle.spec_mouseDriving.enabled or camera.vehicle.spec_mouseDriving.paused then
         superFunc(camera, actionName, inputValue, callbackState, isAnalog, isMouse)
-    elseif isMouse and MouseDrivingMain.axes.xEnabled then
-        MouseDrivingMain.axes.x = inputValue
+    elseif isMouse and MouseDriving.STEER_ENABLED then
+        MouseDrivingMain.mouseXAxis = inputValue
     end
 end
 

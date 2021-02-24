@@ -15,10 +15,13 @@ MouseDriving.THROTTLE_BASE_DEADZONE = 0.05
 MouseDriving.THROTTLE_BASE_SENSITIVITY = 0.02
 MouseDriving.THROTTLE_DEADZONE = 0
 MouseDriving.THROTTLE_SENSITIVITY = 0
+MouseDriving.THROTTLE_ENABLED = true
+MouseDriving.THROTTLE_INVERTED = -1
 MouseDriving.STEER_BASE_DEADZONE = 0.035
 MouseDriving.STEER_BASE_SENSITIVITY = 0.013
 MouseDriving.STEER_DEADZONE = 0
 MouseDriving.STEER_SENSITIVITY = 0
+MouseDriving.STEER_ENABLED = true
 MouseDriving.SHOW_HUD = true
 
 function MouseDriving.initSpecialization()
@@ -68,8 +71,8 @@ function MouseDriving:onUpdate(dt, _, _, _)
 
         if spec.enabled and not g_inputBinding:getShowMouseCursor() then
             -- compute "real" axes
-            spec.realSteerAxis = Utility.clamp(-1 - MouseDriving.STEER_DEADZONE, spec.realSteerAxis + (MouseDrivingMain.axes.x * MouseDriving.STEER_SENSITIVITY), 1 + MouseDriving.STEER_DEADZONE)
-            spec.realThrottleAxis = Utility.clamp(-1 - MouseDriving.THROTTLE_DEADZONE, spec.realThrottleAxis + (MouseDrivingMain.axes.y * MouseDriving.THROTTLE_SENSITIVITY), 1 + MouseDriving.THROTTLE_DEADZONE)
+            spec.realSteerAxis = Utility.clamp(-1 - MouseDriving.STEER_DEADZONE, spec.realSteerAxis + (MouseDrivingMain.mouseXAxis * MouseDriving.STEER_SENSITIVITY), 1 + MouseDriving.STEER_DEADZONE)
+            spec.realThrottleAxis = Utility.clamp(-1 - MouseDriving.THROTTLE_DEADZONE, spec.realThrottleAxis + (MouseDrivingMain.mouseYAxis * MouseDriving.THROTTLE_SENSITIVITY * MouseDriving.THROTTLE_INVERTED), 1 + MouseDriving.THROTTLE_DEADZONE)
 
             -- compute "computed" axes (apply deadzone)
             if spec.realSteerAxis <= -MouseDriving.STEER_DEADZONE then
@@ -122,10 +125,14 @@ function MouseDriving:onRegisterActionEvents(_, _)
     if self:getIsEntered() then
         self:clearActionEventsTable(spec.actionEvents)
         if self:getIsActiveForInput(true, true) then
-            local _, actionEventId = self:addActionEvent(spec.actionEvents, InputAction.MD_TOGGLE, self, MouseDriving.onToggleMouseDriving, false, true, false, true, nil, nil, true)
+            local _, actionEventId = self:addActionEvent(spec.actionEvents, InputAction.MD_TOGGLE, self, MouseDriving.onToggleMouseDriving, false, true, false, true)
             g_inputBinding:setActionEventTextVisibility(actionEventId, false)
             _, actionEventId = self:addActionEvent(spec.actionEvents, InputAction.MD_PAUSE, self, MouseDriving.onPauseMouseDriving, true, true, false, true)
             g_inputBinding:setActionEventTextVisibility(actionEventId, false)
+        --_, actionEventId = self:addActionEvent(spec.actionEvents, InputAction.MD_AXIS_UPDOWN, self, MouseDriving.onAxisUpDown, false, false, true, true, nil, true)
+        --g_inputBinding:setActionEventTextVisibility(actionEventId, false)
+        --_, actionEventId = self:addActionEvent(spec.actionEvents, InputAction.MD_AXIS_LEFTRIGHT, self, MouseDriving.onAxisLeftRight, true, true, true, true, nil, true)
+        --g_inputBinding:setActionEventTextVisibility(actionEventId, false)
         end
     end
 end
@@ -155,6 +162,22 @@ function MouseDriving.onPauseMouseDriving(self, actionName, inputValue, callback
         spec.paused = inputValue == 1
     end
 end
+
+--function MouseDriving.onAxisUpDown(self, actionName, inputValue, callbackState, isAnalog, isMouse)
+--    print(tostring(inputValue))
+--    if MouseDriving.THROTTLE_ENABLED then
+--        local spec = self.spec_mouseDriving
+--        spec.realThrottleAxis = Utility.clamp(-1 - MouseDriving.THROTTLE_DEADZONE, spec.realThrottleAxis + (inputValue * MouseDriving.THROTTLE_SENSITIVITY * MouseDriving.THROTTLE_INVERTED), 1 + MouseDriving.THROTTLE_DEADZONE)
+--    end
+--end
+--
+--function MouseDriving.onAxisLeftRight(self, actionName, inputValue, callbackState, isAnalog, isMouse)
+--    print(tostring(inputValue))
+--    if MouseDriving.STEER_ENABLED then
+--        local spec = self.spec_mouseDriving
+--        spec.realSteerAxis = Utility.clamp(-1 - MouseDriving.STEER_DEADZONE, spec.realSteerAxis + (inputValue * MouseDriving.STEER_SENSITIVITY), 1 + MouseDriving.STEER_DEADZONE)
+--    end
+--end
 
 function MouseDriving.onSettingsChangedEvent(self)
     self:resetMouseDriving()
