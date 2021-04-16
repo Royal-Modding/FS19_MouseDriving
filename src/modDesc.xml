@@ -77,11 +77,13 @@ Si vous souhaitez personnaliser davantage votre expérience de conduite, appuyez
 	<l10n>
 		<text name="input_MD_TOGGLE">
 			<en>Toggle mouse driving</en>
+			<fr>Activer la conduite à la souris</fr>
 			<de>Maussteuerung umschalten</de>
 			<pl>Przełączanie sterowania myszką</pl>
 		</text>
 		<text name="input_MD_PAUSE">
 			<en>Pause mouse driving (keep pressed)</en>
+			<fr>Suspendre la conduite à la souris</fr>
 			<de>Mausfahren anhalten (gedrückt halten)</de>
 			<pl>Zablokuj sterowania myszką (przytrzymanie klawisza)</pl>
 		</text>
@@ -103,84 +105,101 @@ Si vous souhaitez personnaliser davantage votre expérience de conduite, appuyez
 		</text>-->
 		<text name="md_mod_settings_title">
 			<en>Mouse Driving</en>
+			<fr>Conduite à la souris</fr>
 		</text>
 		<text name="md_setting_throttle_enabled">
 			<en>Throttle enabled</en>
+			<fr>Accélérateur activé</fr>
 			<de>Regulierung aktiviert</de>
 			<pl>Sterowanie gazem</pl>
 		</text>
 		<text name="md_setting_throttle_enabled_tooltip">
 			<en>Whether to enable or not the throttle input.</en>
+			<fr>Active ou non l'accélérateur à la souris</fr>
 			<de>Gibt an, ob die Drosseleingabe aktiviert werden soll oder nicht.</de>
 			<pl>Pozwala sterować gazem za pomocą myszki.</pl>
 		</text>
 		<text name="md_setting_throttle_deadZone">
 			<en>Throttle deadzone</en>
+			<fr>Zone morte de l'accélérateur</fr>
 			<de>Drosselklappenbereich</de>
 			<pl>Martwa strefa gazu</pl>
 		</text>
 		<text name="md_setting_throttle_deadZone_tooltip">
 			<en>Adjust the throttle axis deadzone.</en>
+			<fr>Ajuste le point mort de l'accélérateur à la souris</fr>
 			<de>Passen Sie die Deadzone für die Drosselachse an.</de>
 			<pl>Pozwala ustawić martwą strefę dla osi od gazu</pl>
 		</text>
 		<text name="md_setting_throttle_sensitivity">
 			<en>Throttle sensitivity</en>
+			<fr>Sensibilité de l'accélérateur</fr>
 			<de>Drosselempfindlichkeit</de>
 			<pl>Czułość sterowania gazem</pl>
 		</text>
 		<text name="md_setting_throttle_sensitivity_tooltip">
 			<en>Adjust the throttle axis sensitivity.</en>
+			<fr>Ajuste la sensibilité de l'accélérateur</fr>
 			<de>Die Empfindlichkeit der Drosselklappenachse anpassen.</de>
 			<pl>Pozwala ustawić czułość sterowania gazem</pl>
 		</text>
 		<text name="md_setting_throttle_invert">
 			<en>Invert throttle</en>
+			<fr>Inversion de l'axe de l'accélérateur</fr>
 			<de>Drosselklappendrossel</de>
 			<pl>Odwrócone sterowanie gazem</pl>
 		</text>
 		<text name="md_setting_throttle_invert_tooltip">
 			<en>Whether to invert or not the throttle input axis.</en>
+			<fr>Inverse le sens de l'accélérateur</fr>
 			<de>Gibt an, ob die Drosseleingangsachse invertiert werden soll oder nicht.</de>
 			<pl>Pozwala odwrócić sterowanie gazem.</pl>
 		</text>
 		<text name="md_setting_steer_enabled">
 			<en>Steer enabled</en>
+			<fr>Contrôle de la direction</fr>
 			<de>Steuern aktiviert</de>
 			<pl>Sterowanie myszką</pl>
 		</text>
 		<text name="md_setting_steer_enabled_tooltip">
 			<en>Whether to enable or not the steer input.</en>
+			<fr>Contrôle de la direction à la souris</fr>
 			<de>Gibt an, ob der Steuereingang aktiviert werden soll oder nicht.</de>
 			<pl>Włącza lub wyłącza opcję sterowania za pomocą myszki.</pl>
 		</text>
 		<text name="md_setting_steer_deadZone">
 			<en>Steer deadzone</en>
+			<fr>Point mort de la direction</fr>
 			<de>Steuern-Deadzone</de>
 			<pl>Martwa strefa skrętu</pl>
 		</text>
 		<text name="md_setting_steer_deadZone_tooltip">
 			<en>Adjust the steer axis deadzone.</en>
+			<fr>Ajuste le point mort de la direction</fr>
 			<de>Passen Sie die Totzone der Lenkachse an.</de>
 			<pl>Pozwala ustawić martwą strefę dla osi skręcania</pl>
 		</text>
 		<text name="md_setting_steer_sensitivity">
 			<en>Steer sensitivity</en>
+			<fr>Sensibilité de la direction</fr>
 			<de>Lenkempfindlichkeit</de>
 			<pl>Czułość skręcania</pl>
 		</text>
 		<text name="md_setting_steer_sensitivity_tooltip">
 			<en>Adjust the steer axis sensitivity.</en>
+			<fr>Ajuste la sensibilité de la direction</fr>
 			<de>Passen Sie die Empfindlichkeit der Lenkachse an.</de>
 			<pl>Pozwala ustawić czyłość osi skręcania</pl>
 		</text>
 		<text name="md_setting_hud">
 			<en>Axes HUD</en>
+			<fr>Affichage des axes sur le HUD</fr>
 			<de>Achsen HUD</de>
 			<pl>Hud z osiami</pl>
 		</text>
 		<text name="md_setting_hud_tooltip">
 			<en>Whether to show or not the input axes HUD.</en>
+			<fr>Activer l'affichage des axes sur le HUD</fr>
 			<de>Gibt an, ob die Eingabeachsen HUD angezeigt werden sollen oder nicht.</de>
 			<pl>Pokazuje lub ukrywa hud z osiami sterowania</pl>
 		</text>
